@@ -124,15 +124,34 @@ function update() {
 // --------------------------------
 
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
+  const viewport = window.visualViewport;
 
-  canvas.width = rect.width;
-  canvas.height = rect.height;
+  const width = viewport ? viewport.width : window.innerWidth;
+
+  const height = viewport ? viewport.height : window.innerHeight;
+
+  // CSS size
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+
+  // Actual Canvas resolution
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
 resizeCanvas();
 
 window.addEventListener("resize", resizeCanvas);
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", resizeCanvas);
+
+  window.visualViewport.addEventListener("scroll", resizeCanvas);
+}
 
 // --------------------------------
 // Render/update loop
